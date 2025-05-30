@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Módulo de Cobranza</title>
+    <a href="/dashboard">Regresar al Menú Principal</a>
+    <link rel="stylesheet" href="/static/styles.css">
+    <script>
+        function buscarClienteCobranza(event, input) {
+            if (event.key === "Tab") {
+                let claveCliente = input.value.trim();
+                if (claveCliente !== "") {
+                    fetch(`/get-client-debts?clave=${claveCliente}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.found) {
+                                document.getElementById("cliente_nombre_cobranza").value = data.nombre + " " + data.apellido;
+                                document.getElementById("saldo_pendiente_total").value = data.saldo_pendiente_total.toFixed(2);
+
+                                const tablaVentas = document.getElementById("tabla-ventas-pendientes");
+                                tablaVentas.innerHTML = `
+                                    <thead>
+                                        <tr>
+                                            <th>Folio de Venta</th>
+                                            <th>Saldo Pendiente</th>
+                                            <th>Cantidad a Pagar</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${data.ventas_pendientes.map(venta => `
+                                            <tr>
+                                                <td>${venta.folio}</td>
+                                                <td>${venta.saldo_a_pagar.toFixed(2)}</td>
+                                                <td><input type="number" name="pago_${venta.folio}" value="${venta.saldo_a_pagar.toFixed(2)}" step="0.01"></td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                `;
+                            } else {
+                                document.getElementById("cliente_nombre_cobranza").value = "";
+                                document.getElementById("saldo_pendiente_total").value = "";
+                                document.getElementById("tabla-ventas-pendientes").innerHTML = "";
+                            }
+                        });
+                }
+            }
+        }
+
+        function procesarPago() {
+            const claveCliente = document.getElementById("cliente_clave_cobranza").value.trim();
+            if (!claveCliente) {
+                alert("Por favor, ingrese la clave del cliente.");
+                return;
+            }
+
+            const pagos = {};
+            const inputsPago = document.querySelectorAll('#tabla-ventas-pendientes input[type="number"]');
+            inputsPago.forEach(input => {
+                const folio = input.name.substring(5); // Extraer el folio del nombre del input (pago_VENTA-XXX)
+                const cantidadPagada = parseFloat(input.value) || 0;
+                if (cantidadPagada > 0) {
+                    pagos[folio] = cantidadPagada;
+                }
+            });
+
+            if (Object.keys(pagos).length === 0) {
+                alert("Por favor, ingrese las cantidades a pagar.");
+                return;
+            }
+
+            fetch('/process-payment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    cliente_clave: claveCliente,
+                    pagos: pagos,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    // Limpiar los campos y la tabla después del pago
+                    document.getElementById("cliente_clave_cobranza").value = "";
+                    document.getElementById("cliente_nombre_cobranza").value = "";
+                    document.getElementById("saldo_pendiente_total").value = "";
+                    document.getElementById("tabla-ventas-pendientes").innerHTML = "";
+                } else {
+                    alert(data.message);
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    {% include 'header.html' %}
+
+    <h2>Módulo de Cobranza</h2>
+
+    <div class="cobranza-container">
+        <div class="cliente-info">
+            <label for="cliente_clave_cobranza">Clave del Cliente:</label>
+            <input type="text" id="cliente_clave_cobranza" onkeydown="buscarClienteCobranza(event, this)" required>
+        </div>
+        <div class="cliente-info">
+            <label for="cliente_nombre_cobranza">Cliente:</label>
+            <input type="text" id="cliente_nombre_cobranza" readonly>
+        </div>
+        <div class="cliente-info">
+            <label for="saldo_pendiente_total">Saldo Pendiente Total:</label>
+            <input type="text" id="saldo_pendiente_total" readonly>
+        </div>
+    </div>
+
+    <div class="ventas-pendientes-container">
+        <h3>Ventas Pendientes:</h3>
+        <table id="tabla-ventas-pendientes">
+            </table>
+    </div>
+
+    <div class="button-group">
+        <button type="button" onclick="procesarPago()">Procesar Pago</button>
+    </div>
+
+</body>
+</html>

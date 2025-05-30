@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Entrada de Productos</title>
+    <a href="/dashboard">Regresar al Menú Principal</a>
+    <link rel="stylesheet" href="/static/styles.css">
+    <script>
+        function fetchProductDetails() {
+            const clave = document.getElementById("clave").value;
+            fetch(`/get-product?clave=${clave}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.found) {
+                        document.getElementById("articulo").value = data.articulo;
+                        document.getElementById("marca").value = data.marca;
+                        document.getElementById("categoria").value = data.categoria;
+                        document.getElementById("tamaño").value = data.tamaño;
+                    }
+                });
+        }
+
+        function confirmEntry() {
+            return confirm("¿Deseas dar entrada a este producto?");
+        }
+
+        function resetForm() {
+            document.getElementById("inventory-form").reset();
+        }
+    </script>
+</head>
+<body>
+    {% include 'header.html' %}
+
+    <h2>Entrada de Productos</h2>
+
+    {% if message %}
+        <p class="success-message">{{ message }}</p>
+    {% endif %}
+
+    <div class="main-container">
+        <form method="POST" action="/inventory-entry" id="inventory-form" onsubmit="return confirmEntry()">
+            <h3>Entrada de Productos</h3>
+            <div class="form-container">
+                <div class="form-column">
+                    <label for="clave">Clave:</label>
+                    <input type="text" name="clave" id="clave" required onblur="fetchProductDetails()">
+                </div>
+                <div class="form-column">
+                    <label for="articulo">Artículo:</label>
+                    <input type="text" name="articulo" id="articulo" readonly>
+                </div>
+            </div>
+
+            <div class="form-container">
+                <div class="form-column">
+                    <label for="marca">Marca:</label>
+                    <input type="text" name="marca" id="marca" readonly>
+                </div>
+                <div class="form-column">
+                    <label for="categoria">Categoría:</label>
+                    <input type="text" name="categoria" id="categoria" readonly>
+                </div>
+            </div>
+
+            <div class="form-container">
+                <div class="form-column">
+                    <label for="tamaño">Tamaño:</label>
+                    <input type="text" name="tamaño" id="tamaño" readonly>
+                </div>
+                <div class="form-column">
+                    <label for="cantidad">Cantidad:</label>
+                    <input type="number" name="cantidad" required step="0.01">
+                </div>
+            </div>
+
+            <div class="form-container">
+                <div class="form-column">
+                    <label for="costo_unitario">Costo Unitario:</label>
+                    <input type="number" step="0.01" name="costo_unitario" required>
+                </div>
+                <div class="form-column">
+                    <label for="precio_unitario">Precio Unitario:</label>
+                    <input type="number" step="0.01" name="precio_unitario" required>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="submit">Dar Entrada</button>
+                <button type="button" onclick="resetForm()">Limpiar Campos</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="button-group">
+        <a href="/inventory-management" class="button">Salidas y Devoluciones</a>
+    </div>
+</body>
+</html>

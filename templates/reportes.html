@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Reportes - ERP</title>
+    {% include 'header.html' %}  <a href="/dashboard" class="back-link">Regresar al Menú Principal</a>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    {% include 'header.html' %}
+
+    <h2>Módulo de Reportes</h2>
+    <a href="/dashboard" class="back-link">Regresar al Menú Principal</a>
+
+    <div class="main-container">
+        <div class="report-filters">
+            <h3>Filtrar por Rango de Fechas (Opcional)</h3>
+            <form id="date-range-form">
+                <div class="form-container">
+                    <div class="form-column">
+                        <label for="start_date">Fecha de Inicio:</label>
+                        <input type="date" id="start_date" name="start_date">
+                    </div>
+                    <div class="form-column">
+                        <label for="end_date">Fecha de Fin:</label>
+                        <input type="date" id="end_date" name="end_date">
+                    </div>
+                </div>
+                <p class="info-text">Selecciona un rango de fechas para filtrar los reportes de ventas y cobranza.</p>
+            </form>
+        </div>
+
+        <div class="report-options">
+            <h3>Ver y Exportar Datos</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Reporte</th>
+                        <th>Notas</th> <!-- Nueva columna -->
+                        <th>Ver Gráfica</th>
+                        <th>Exportar (Excel)</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Ventas por Fecha</td>
+                        <td>Registro detallado de ventas diarias</td> <!-- Nueva celda de notas -->
+                        <td><a href="{{ url_for('view_sales_graph') }}" class="graph-button">Ver Gráfica</a></td>
+                        <td><a href="{{ url_for('export_sales_excel') }}" class="export-button">Exportar</a></td>
+                    </tr>
+                    <tr>
+                        <td>Existencias de Productos</td>
+                        <td>Inventario actualizado con disponibilidad</td>
+                        <td><a href="{{ url_for('view_inventory_graph') }}" class="graph-button">Ver Gráfica</a></td>
+                        <td><a href="{{ url_for('export_inventory_excel') }}" class="export-button">Exportar</a></td>
+                    </tr>
+                    <tr>
+                        <td>Saldos de Clientes</td>
+                        <td>Estado de cuenta de clientes</td>
+                        <td><a href="{{ url_for('view_balances_graph') }}" class="graph-button">Ver Gráfica</a></td>
+                        <td><a href="{{ url_for('export_balances_excel') }}" class="export-button">Exportar</a></td>
+                    </tr>
+                    <tr>
+                        <td>Catálogo de Productos</td>
+                        <td>Lista completa de artículos disponibles</td>
+                        <td><span class="disabled-button">Ver Gráfica</span></td>
+                        <td><a href="{{ url_for('export_products_excel') }}" class="export-button">Exportar</a></td>
+                    </tr>
+                    <tr>
+                        <td>Base de Clientes</td>
+                        <td>Registro de clientes y datos de contacto</td>
+                        <td><span class="disabled-button">Ver Gráfica</span></td>
+                        <td><a href="{{ url_for('export_clients_excel') }}" class="export-button">Exportar</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <style>
+        /* Estilos existentes */
+        .report-filters {
+            background-color: #f9f9f9;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .report-filters h3 {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .report-filters .form-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .report-filters .form-column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .report-filters label {
+            margin-bottom: 5px;
+        }
+
+        .report-filters input[type="date"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .report-filters .info-text {
+            font-size: 0.9em;
+            color: #777;
+            text-align: center;
+        }
+
+        .report-options {
+            text-align: center;
+        }
+
+        .report-options h3 {
+            margin-bottom: 15px;
+        }
+
+        .report-options table {
+            width: 80%;
+            margin: 0 auto;
+            border-collapse: collapse;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .report-options th, .report-options td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .report-options th {
+            background-color: #f0f0f0;
+        }
+
+        .graph-button, .export-button {
+            display: inline-block;
+            padding: 8px 15px;
+            margin: 5px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 0.9em;
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .graph-button {
+            background-color: #00c853; /* Verde */
+            color: white;
+        }
+
+        .graph-button:hover {
+            background-color: #00a34a;
+        }
+
+        .export-button {
+            background-color: #2196F3;
+            color: white;
+        }
+
+        .export-button:hover {
+            background-color: #2196F3;
+        }
+
+        .disabled-button {
+            display: inline-block;
+            padding: 8px 15px;
+            margin: 5px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            text-align: center;
+            min-width: 80px;
+            background-color: #ccc;
+            color: #666;
+            cursor: not-allowed;
+        }
+    </style>
+</body>
+</html>

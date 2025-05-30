@@ -1,0 +1,373 @@
+/* /static/styles.css */
+
+/* Estilo global (se mantiene igual) */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    padding-top: 80px;
+}
+
+h2 {
+    color: #2c3e50;
+    font-size: 2em; /* Esto hará que la letra sea más grande (2 veces el tamaño normal) */
+    font-weight: bold; /* Esto pondrá la letra en negrita */
+    font-family: 'Arial', sans-serif; /* Puedes cambiar la fuente aquí */
+    /* Otras propiedades que puedes usar:
+       - text-transform: uppercase; /* Para poner todo en mayúsculas */
+       - letter-spacing: 1px;    /* Para aumentar el espacio entre letras */
+       - text-shadow: 2px 2px 4px #000000; /* Para agregar una sombra al texto */
+}
+
+p {
+    font-size: 1.2em; /* Esto hará que la letra sea un poco más grande */
+    color: #555; /* Cambia el color del texto */
+    font-family: 'Verdana', sans-serif; /* Cambia la fuente del texto */
+    /* Otras propiedades que puedes usar:
+       - line-height: 1.5; /* Para aumentar el espacio entre líneas */
+       - font-style: italic; /* Para poner la letra en cursiva */
+
+}
+
+form:not(#sales-page form):not(.login-form) { /* Excluye el formulario de ventas Y el formulario con la clase login-form */
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    width: 600px; /* Aumenta el ancho a 500px (puedes ajustar este valor) */
+    text-align: center;
+
+}
+
+
+/* Reducir el margen inferior del div que contiene "Guardar Producto" */
+body > div.main-container > div.button-group:nth-child(1) {
+    margin-bottom: 3px; /* Prueba con este valor y ajústalo */
+}
+
+/* Reducir el margen superior del div que contiene "Cargar Base" */
+body > div.main-container > div.button-group:nth-child(2) {
+    margin-top: 3px; /* Prueba con este valor y ajústalo */
+
+}
+
+
+/* Reducir el margen inferior del div que contiene "Cargar Base" y "Subir Archivo" */
+body > div.main-container > div.button-group:nth-child(2) {
+    margin-bottom: 3px; /* Prueba con este valor y ajústalo */
+}
+
+/* Reducir el margen superior del div que contiene "Clave" y "Buscar" */
+body > div.main-container > div.button-group:nth-child(3) {
+    margin-top: 3px; /* Prueba con este valor y ajústalo */
+}
+
+
+
+label {
+    display: block;
+    margin-top: 1px;
+    font-weight: bold;
+}
+
+input:not(#sales-page input) { /* Aplica estilos a otros inputs, no a los de ventas */
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    margin-top: 15px;
+    background-color: #2196F3;
+    color: white;
+    padding: 10px;
+    width: 100%;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: ##2196F3;
+}
+
+a {
+    display: block;
+    margin-top: 15px;
+    text-decoration: none;
+    color: #2196F3;
+    font-weight: bold;
+    text-align: center; /* Añade esta línea para centrar el texto del enlace */
+}
+
+
+a:hover {
+    color: #2196F3;
+}
+
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #2196F3;
+    color: white;
+    text-align: center;
+    padding: 10px; /* Reducido de 20px a 10px */
+    font-size: 16px; /* Reducido de 18px a 16px */
+    font-weight: bold;
+    border-bottom: 2px solid #2196F3; /* Reduje el grosor del borde */
+}
+
+header h1 {
+    margin: 0;
+    font-size: 28px; /* También ajustado */
+}
+
+header p {
+
+    margin: 2px 0 0;
+    font-size: 14px; /* Reducido de 26px a 20px */
+}
+
+.modules {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-top: 30px;
+    width: 80%;
+    text-align: center;
+}
+
+.module {
+    background: #2196F3;
+    color: white;
+    padding: 20px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    transition: 0.3s ease;
+}
+
+.module:hover {
+    background: #2196F3;
+    transform: scale(1.05);
+}
+
+.logout {
+    display: block;
+    margin-top: 30px;
+    text-decoration: none;
+    color: red;
+    font-weight: bold;
+}
+
+.button-group button {
+    width: 150px;
+    height: 40px;
+    font-size: 16px;
+    padding: 10px;
+    flex-shrink: 0;
+}
+
+.success-message {
+    background-color: #2196F3;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    border-radius: 5px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.form-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    width: 100%;
+}
+
+.form-column {
+    width: 48%;
+}
+
+/* Ajustes generales */
+#sales-page .main-container,
+#sales-page .button-group,
+#sales-page .resumen-container,
+#sales-page .notas-container {
+    margin-top: 20px;
+}
+
+#sales-page .button-group,
+#sales-page .search-container,
+#sales-page form .cliente-container,
+#sales-page .resumen-container,
+#sales-page .notas-container {
+    display: flex;
+    gap: 20px;
+}
+
+/* Formulario de ventas */
+#sales-page form {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    width: 80%;
+    max-width: 900px;
+    margin: 20px auto;
+}
+
+/* Cliente */
+#sales-page form .cliente-info {
+    flex: 1;
+}
+
+#sales-page form .cliente-info label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+#sales-page form .cliente-info input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Tabla de ventas */
+#sales-page #sales-grid {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+}
+
+#sales-page #sales-grid th,
+#sales-page #sales-grid td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    white-space: nowrap;
+}
+
+#sales-page #sales-grid th {
+    background-color: #2196F3;
+    font-weight: bold;
+    color: white;
+}
+
+#sales-page #sales-grid input[type="text"],
+#sales-page #sales-grid input[type="number"] {
+    width: 80px;
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+#sales-page #sales-grid button {
+    padding: 5px 8px;
+    cursor: pointer;
+}
+
+/* Resumen de la venta */
+#sales-page .resumen-container {
+    flex-direction: column;
+    align-items: center;
+}
+
+#sales-page .resumen-container .resumen-info {
+    width: 100%;
+    text-align: center;
+}
+
+#sales-page .resumen-container .resumen-info input[type="text"],
+#sales-page .resumen-container .resumen-info input[type="number"],
+#sales-page .resumen-container .resumen-info select {
+    width: 100%;
+    max-width: 200px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+/* Notas */
+#sales-page .notas-container {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+#sales-page .notas-container textarea {
+    width: 80%;
+    max-width: 600px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+/* Enlaces */
+#sales-page a {
+    display: block;
+    margin-top: 20px;
+    color: #2196F3;
+    text-decoration: none;
+    text-align: center;
+}
+
+#sales-page a:hover {
+    text-decoration: underline;
+}
+
+/* Mensajes */
+#sales-page .success-message {
+    position: relative;
+    background-color: #2196F3
+    color: white; /* Letras blancas */
+    font-weight: bold;
+    text-align: center;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+    display: inline-block;
+}
+
+
+#sales-page .button-group {
+    display: flex;
+    justify-content: center; /* Centrar horizontalmente */
+    align-items: center; /* Centrar verticalmente si es necesario */
+    margin-top: 20px;
+    width: 100%;
+}
+
+#sales-page .button-group button {
+    font-size: 16px;
+    padding: 10px 15px;
+    width: auto;
+    height: auto;
+}
+
+#sales-page #sales-grid input[name="descripcion[]"] {
+    width: 100%; /* Se expande al ancho de la celda */
+    max-width: 500px; /* Ajusta según necesidades */
+    padding: 8px;
+}

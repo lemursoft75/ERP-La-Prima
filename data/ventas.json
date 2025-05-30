@@ -1,0 +1,60 @@
+{
+    "ventas": [
+        {
+            "folio": "VENTA-1",
+            "fecha_hora": "2025-05-30T16:15:14.049294",
+            "cliente_clave": "CDA001",
+            "nombre_cliente": "CASA ",
+            "apellido_cliente": "DE LOS ABUELOS",
+            "productos": [
+                {
+                    "clave": "QTM001",
+                    "nombre_articulo": "QUESO MANCHEGO",
+                    "cantidad": "3.5",
+                    "precio_unitario": "250",
+                    "descuento": "",
+                    "impuesto": ""
+                }
+            ],
+            "total": 875.0,
+            "metodo_pago": "credito",
+            "cantidad_pagada": 600.0,
+            "saldo_a_pagar": 275.0,
+            "notas": "vvvv",
+            "pagos_realizados": [
+                {
+                    "fecha_hora": "2025-05-30T16:39:22.008024",
+                    "monto": 500
+                }
+            ]
+        },
+        {
+            "folio": "VENTA-2",
+            "fecha_hora": "2025-05-30T16:38:02.440471",
+            "cliente_clave": "CDA001",
+            "nombre_cliente": "CASA ",
+            "apellido_cliente": "DE LOS ABUELOS",
+            "productos": [
+                {
+                    "clave": "QTM001",
+                    "nombre_articulo": "QUESO MANCHEGO",
+                    "cantidad": "10.5",
+                    "precio_unitario": "250",
+                    "descuento": "0",
+                    "impuesto": "0"
+                }
+            ],
+            "total": 2625.0,
+            "metodo_pago": "credito",
+            "cantidad_pagada": 1625.0,
+            "saldo_a_pagar": 1000.0,
+            "notas": "fffff",
+            "pagos_realizados": [
+                {
+                    "fecha_hora": "2025-05-30T16:39:22.008024",
+                    "monto": 1000
+                }
+            ]
+        }
+    ]
+}

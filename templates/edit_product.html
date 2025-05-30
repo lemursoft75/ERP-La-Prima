@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Producto</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <script>
+        function confirmDelete() {
+            return confirm("¿Estás seguro de que deseas eliminar este producto?");
+        }
+    </script>
+</head>
+<body>
+    {% include 'header.html' %}  <!-- Encabezado -->
+
+    <h2>Editar Producto</h2>
+    {% if message %}
+        <p class="success-message">{{ message }}</p>
+    {% endif %}
+
+    <!-- Contenedor para el formulario de edición -->
+    <div class="main-container">
+        <form method="POST" action="/edit-product">
+            <input type="hidden" name="clave" value="{{ product.clave }}">
+
+            <div class="form-container">
+                <!-- Columna izquierda -->
+                <div class="form-column">
+                    <label for="articulo">Artículo:</label>
+                    <input type="text" name="articulo" value="{{ product.articulo }}" required>
+
+                    <label for="marca">Marca:</label>
+                    <input type="text" name="marca" value="{{ product.marca }}" required>
+
+                    <label for="categoria">Categoría:</label>
+                    <input type="text" name="categoria" value="{{ product.categoria }}" required>
+                </div>
+
+                <!-- Columna derecha -->
+                <div class="form-column">
+                    <label for="tamaño">Tamaño:</label>
+                    <input type="text" name="tamaño" value="{{ product.tamaño }}" required>
+
+                    <label for="existencias">Existencias actuales:</label>
+                    <input type="text" name="existencias" value="{{ product.existencias }}" readonly>
+
+                    <label for="observaciones">Observaciones:</label>
+                    <textarea name="observaciones">{{ product.observaciones }}</textarea>
+                </div>
+            </div>
+
+            <!-- Botón Guardar -->
+            <div class="button-group">
+                <button type="submit">Guardar Cambios</button>
+            </div>
+        </form>
+
+        <!-- Formulario de eliminación dentro del mismo contenedor -->
+        <div class="button-group">
+            <form method="POST" action="/delete-product" onsubmit="return confirmDelete()">
+                <input type="hidden" name="clave" value="{{ product.clave }}">
+                <button type="submit" class="delete-button">Eliminar Producto</button>
+            </form>
+        </div>
+
+    <a href="/dashboard">Regresar al Menú Principal</a>
+</body>
+</html>

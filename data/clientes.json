@@ -1,0 +1,13 @@
+{
+    "clients": [
+        {
+            "clave": "CDA001",
+            "nombre": "CASA ",
+            "apellido": "DE LOS ABUELOS",
+            "direccion": "GRAN PLAZA",
+            "telefono": "9999999",
+            "correo": "KLJLKJ@GMAIL.COM",
+            "credito_autorizado": "10000"
+        }
+    ]
+}

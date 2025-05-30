@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Productos</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    {% include 'header.html' %}  <a href="/dashboard" class="back-link">Regresar al Menú Principal</a>
+
+    <h2>Registro de Productos</h2>
+    {% if message %}
+        <p class="success-message">{{ message }}</p>
+    {% endif %}
+
+    <div class="main-container">
+        <form method="POST">
+            <div class="form-container">
+                <div class="form-column">
+                    <label for="clave">Clave:</label>
+                    <input type="text" name="clave" required>
+
+                    <label for="articulo">Artículo:</label>
+                    <input type="text" name="articulo" required>
+
+                    <label for="marca">Marca:</label>
+                    <input type="text" name="marca" required>
+                </div>
+
+                <div class="form-column">
+                    <label for="categoria">Categoria:</label>
+                    <input type="text" name="categoria" required>
+
+                    <label for="tamaño">Tamaño:</label>
+                    <input type="text" name="tamaño" required>
+
+                    <label for="observaciones">Observaciones:</label>
+                    <textarea name="observaciones"></textarea>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="submit">Guardar Producto</button>
+            </div>
+        </form>
+            <div class="button-group">
+                <form method="POST" action="/upload-excel" enctype="multipart/form-data">
+                    <label for="file">Cargar Base:</label>
+                    <input type="file" name="file" accept=".xlsx" required>
+                    <button type="submit">Subir Archivo</button>
+                </form>
+            </div>
+
+        <div class="button-group">
+                <form method="POST" action="/search-product" class="multipart/form-data">
+                    <label for="search_clave">Clave:</label>
+                    <input type="text" name="search_clave" required>
+                    <button type="submit">Buscar Producto</button>
+                </form>
+            </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Módulo de Ventas</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <script>
+        // Autocompletar datos de cliente al presionar Tab
+        function buscarCliente(event, input) {
+            if (event.key === "Tab") {
+                let claveCliente = input.value.trim();
+                if (claveCliente !== "") {
+                    fetch(`/get-client?clave=${claveCliente}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.found) {
+                                document.getElementById("cliente_nombre").value = data.nombre + " " + data.apellido;
+                                document.getElementById("credito_autorizado").value = data.credito_autorizado;
+                                document.getElementById("saldo_actual_cliente_venta").value = data.saldo_actual.toFixed(2); // Actualizar el saldo actual
+                                if (data.saldo_actual === 0) {
+                                    document.getElementById("saldo_agotado_venta").textContent = "SALDO AGOTADO";
+                                } else {
+                                    document.getElementById("saldo_agotado_venta").textContent = "";
+                                }
+                            }
+                        });
+                }
+            }
+        }
+
+        // Autocompletar datos del producto al presionar Tab
+        function buscarProducto(event, input) {
+            if (event.key === "Tab") {
+                let claveProducto = input.value.trim();
+                if (claveProducto !== "") {
+                    fetch(`/get-product?clave=${claveProducto}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.found) {
+                                let row = input.parentNode.parentNode;
+                                row.cells[1].children[0].value = data.articulo;
+                                row.cells[2].children[0].value = data.existencias;
+                                row.cells[4].children[0].value = data.precio_unitario;
+                                calcularTotal();
+                            }
+                        });
+                }
+            }
+        }
+
+        // Agregar nueva fila al grid de productos
+        function addRow() {
+            const table = document.getElementById("sales-grid").getElementsByTagName('tbody')[0];
+            let row = table.insertRow();
+            row.innerHTML = `
+                <td><input type="text" name="clave[]" onkeydown="buscarProducto(event, this)" required></td>
+                <td><input type="text" name="descripcion[]" readonly></td>
+                <td><input type="number" name="existencias[]" readonly></td>
+                <td><input type="number" name="cantidad[]" oninput="calcularTotal()" required step="0.01"></td>
+                <td><input type="number" name="precio[]" oninput="calcularTotal()" required></td>
+                <td><input type="number" name="descuento[]" oninput="calcularTotal()" step="0.01"></td>
+                <td><input type="number" name="impuesto[]" oninput="calcularTotal()" step="0.01"></td>
+                <td><button type="button" onclick="removeRow(this)">❌</button></td>
+            `;
+        }
+
+        function removeRow(button) {
+            button.parentNode.parentNode.remove();
+            calcularTotal();
+        }
+
+        // Calcular el total en tiempo real
+        function calcularTotal() {
+            let totalVenta = 0;
+            const rows = document.querySelectorAll("#sales-grid tbody tr");
+
+            rows.forEach(row => {
+                const cantidad = parseFloat(row.cells[3].children[0].value) || 0;
+                const precio = parseFloat(row.cells[4].children[0].value) || 0;
+                const descuento = parseFloat(row.cells[5].children[0].value) || 0;
+                const impuesto = parseFloat(row.cells[6].children[0].value) || 0;
+
+                let subtotal = cantidad * precio;
+                let descuentoAplicado = subtotal * (descuento / 100);
+                let impuestoAplicado = subtotal * (impuesto / 100);
+                let totalProducto = subtotal - descuentoAplicado + impuestoAplicado;
+
+                totalVenta += totalProducto;
+            });
+
+            document.getElementById("total").value = totalVenta.toFixed(2);
+            calcularSaldo(); // Llamar a calcularSaldo al calcular el total
+        }
+
+        function calcularSaldo() {
+            const total = parseFloat(document.getElementById("total").value) || 0;
+            const cantidadPagada = parseFloat(document.getElementById("cantidad_pagada").value) || 0;
+            const saldoAPagar = total - cantidadPagada;
+            document.getElementById("saldo_a_pagar").value = saldoAPagar.toFixed(2);
+        }
+
+        function validarMetodoPago() {
+            const metodoPago = document.querySelector('select[name="metodo_pago"]').value;
+            const confirmar = confirm(`No olvide verificar el método de pago (${metodoPago}). Aceptar para continuar, Cancelar para verificar`);
+            return confirmar; // Si el usuario elige "Aceptar", el formulario se enviará
+        }
+    </script>
+</head>
+<body id="sales-page">
+    {% include 'header.html' %}
+
+    <h2>Módulo de Ventas</h2>
+    {% if message %}
+        <p class="success-message">{{ message }}</p>
+    {% endif %}
+
+    <form method="POST" action="/process-sale" onsubmit="return validarMetodoPago()">
+        <div class="cliente-container">
+            <div class="cliente-info">
+                <label for="cliente_clave">Clave del Cliente:</label>
+                <input type="text" id="cliente_clave" name="cliente_clave" onkeydown="buscarCliente(event, this)" required>
+            </div>
+            <div class="cliente-info">
+                <label for="cliente_nombre">Cliente:</label>
+                <input type="text" id="cliente_nombre" readonly>
+            </div>
+            <div class="cliente-info">
+                <label for="credito_autorizado">Crédito Autorizado:</label>
+                <input type="text" id="credito_autorizado" readonly>
+            </div>
+            <div class="cliente-info">
+                <label for="saldo_actual_cliente_venta">Saldo Disponible:</label>
+                <input type="text" id="saldo_actual_cliente_venta" readonly>
+                <p id="saldo_agotado_venta" class="saldo-agotado-message"></p>
+            </div>
+        </div>
+
+        <div class="main-container">
+            <table id="sales-grid" border="1">
+                <thead>
+                    <tr>
+                        <th>Clave</th>
+                        <th>Descripción</th>
+                        <th>Existencias</th>
+                        <th>Cantidad</th>
+                        <th>Precio Unitario</th>
+                        <th>Descuento (%)</th>
+                        <th>Impuesto (%)</th>
+                        <th>Eliminar</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <button type="button" onclick="addRow()">➕ Agregar Producto</button>
+        </div>
+
+        <div class="resumen-container">
+            <div class="resumen-info">
+                <label for="total">Total:</label>
+                <input type="text" id="total" name="total" readonly>
+            </div>
+            <div class="resumen-info">
+                <label for="cantidad_pagada">Cantidad Pagada:</label>
+                <input type="number" id="cantidad_pagada" name="cantidad_pagada" value="0.00" step="0.01" oninput="calcularSaldo()">
+            </div>
+            <div class="resumen-info">
+                <label for="saldo_a_pagar">Saldo a Pagar:</label>
+                <input type="text" id="saldo_a_pagar" name="saldo_a_pagar" value="0.00" readonly>
+            </div>
+            <div class="resumen-info">
+                <label for="metodo_pago">Método de Pago:</label>
+                <select name="metodo_pago" required>
+                    <option value="contado">Contado</option>
+                    <option value="credito">Crédito</option> </select>
+                </select>
+            </div>
+            <div class="resumen-info">
+                <label for="notas">Notas:</label>
+                <textarea name="notas" id="notas" rows="4" cols="50" placeholder="Escribe aquí cualquier nota adicional sobre la venta..."></textarea>
+             </div>
+        </div>
+        <div class="button-group">
+            <button type="submit">Registrar Venta</button>
+        </div>
+        <a href="/dashboard">Regresar al Menú Principal</a>
+    </form>
+
+
+</body>
+</html>

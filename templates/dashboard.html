@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - ERP</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    {% include 'header.html' %}  <!-- Agregar encabezado -->
+
+    <h2>¡Bienvenido!, {{ user }}</h2>
+    <p>Comienza a gestionar tu negocio.</p>
+
+    <div class="modules">
+        <a href="/register-client" class="module">📁 Registro de Clientes</a>
+        <a href="/register-product" class="module">📦 Registro de Productos</a>
+        <a href="/inventory-entry" class="module">📊 Inventarios</a>
+        <a href="/sales" class="module">💰 Ventas</a>
+        <a href="/billing" class="module">🏦 Cobranza</a>
+        <a href="/reportes" class="module">📜 Reportes</a>
+    </div>
+
+    <a href="/" class="logout">Cerrar sesión</a>
+</body>
+</html>

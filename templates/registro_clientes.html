@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Clientes</title>
+    <a href="/dashboard">Regresar al Menú Principal</a>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    {% include 'header.html' %}  <!-- Encabezado -->
+
+    <h2>Registro de Clientes</h2>
+    {% if message %}
+        <p class="success-message">{{ message }}</p>
+    {% endif %}
+
+    <!-- Contenedor único para todo el formulario -->
+    <div class="main-container">
+        <form method="POST">
+            <div class="form-container">
+                <!-- Columna izquierda -->
+                <div class="form-column">
+                    <label for="clave">Clave:</label>
+                    <input type="text" name="clave" required>
+
+                    <label for="nombre">Nombre:</label>
+                    <input type="text" name="nombre" required>
+
+                    <label for="apellido">Apellido:</label>
+                    <input type="text" name="apellido" required>
+
+                    <label for="direccion">Dirección:</label>
+                    <input type="text" name="direccion" required>
+                </div>
+
+                <!-- Columna derecha -->
+                <div class="form-column">
+                    <label for="telefono">Teléfono:</label>
+                    <input type="tel" name="telefono" required>
+
+                    <label for="correo">Correo electrónico:</label>
+                    <input type="email" name="correo" required>
+
+                    <label for="credito_autorizado">Crédito autorizado:</label>
+                    <input type="number" name="credito_autorizado" required>
+                </div>
+            </div>
+
+            <!-- Botón Guardar -->
+            <div class="button-group">
+                <button type="submit">Guardar Cliente</button>
+            </div>
+        </form>
+
+        <!-- Formulario de búsqueda dentro del mismo contenedor -->
+        <div class="button-group">
+            <form method="POST" action="/search-client" class="multipart/form-data">
+                <label for="search_clave">Clave:</label>
+                <input type="text" name="search_clave" required>
+                <button type="submit">Buscar Cliente</button>
+            </form>
+        </div>
+
+    </div>
+</body>
+</html>

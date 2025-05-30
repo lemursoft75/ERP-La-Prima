@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ report_title }} - ERP</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    {% include 'header.html' %}
+    <a href="/reportes" class="back-link">Regresar a Reportes</a>  <h2>{{ report_title }}</h2>
+    {% if plot_url %}
+    <img src="data:image/png;base64,{{ plot_url }}" alt="Gráfica">
+    {% else %}
+    <p>No se pudo generar la gráfica.</p>
+    {% endif %}
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Movimientos de Inventario</title>
+    <a href="/dashboard" class="button">Regresar al Menú Principal</a>
+    <link rel="stylesheet" href="/static/styles.css">
+    <script>
+        function fetchProductDetails(inputIdArticulo, inputIdMarca, inputIdCategoria, inputIdTamano, inputIdExistencias, clave) {
+            fetch(`/get-product?clave=${clave}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.found) {
+                        document.getElementById(inputIdArticulo).value = data.articulo;
+                        document.getElementById(inputIdMarca).value = data.marca;
+                        document.getElementById(inputIdCategoria).value = data.categoria;
+                        document.getElementById(inputIdTamano).value = data.tamaño;
+                        document.getElementById(inputIdExistencias).textContent = `Existencias: ${data.existencias}`;
+                    } else {
+                        document.getElementById(inputIdArticulo).value = "";
+                        document.getElementById(inputIdMarca).value = "";
+                        document.getElementById(inputIdCategoria).value = "";
+                        document.getElementById(inputIdTamano).value = "";
+                        document.getElementById(inputIdExistencias).textContent = "";
+                    }
+                });
+        }
+
+        function confirmExit() {
+            return confirm("¿Deseas registrar esta salida?");
+        }
+
+        function confirmReturn() {
+            return confirm("¿Deseas registrar esta devolución y regresar el producto a existencias?");
+        }
+    </script>
+</head>
+<body>
+    {% include 'header.html' %}
+
+    <h2>Movimientos de Inventario</h2>
+
+    {% if message %}
+        <p class="{{ 'success-message' if 'registrada' in message else 'error-message' }}">{{ message }}</p>
+    {% endif %}
+
+    <div class="main-container">
+        <form method="POST" action="/inventory-exit" id="exit-form" onsubmit="return confirmExit()">
+            <h3>Salida de Productos (No Venta)</h3>
+            <div class="form-container">
+                <div class="form-column">
+                    <label for="clave_salida">Clave:</label>
+                    <input type="text" name="clave_salida" id="clave_salida" required
+                        onblur="fetchProductDetails('articulo_salida', 'marca_salida', 'categoria_salida', 'tamano_salida', 'existencias_salida', this.value)">
+                    <span id="existencias_salida"></span>
+                </div>
+                <div class="form-column">
+                    <label for="articulo_salida">Artículo:</label>
+                    <input type="text" name="articulo_salida" id="articulo_salida" readonly>
+                </div>
+            </div>
+            <div class="form-container">
+                <div class="form-column">
+                    <label for="cantidad_salida">Cantidad de Salida:</label>
+                    <input type="number" name="cantidad_salida" required step="0.01">
+                </div>
+                <div class="form-column">
+                    <label for="motivo_salida">Motivo de Salida:</label>
+                    <input type="text" name="motivo_salida">
+                </div>
+            </div>
+            <div class="button-group">
+                <button type="submit">Salida</button>
+            </div>
+        </form>
+
+        <form method="POST" action="/inventory-return" id="return-form" onsubmit="return confirmReturn()">
+            <h3>Devolución de Productos</h3>
+            <div class="form-container">
+                <div class="form-column">
+                    <label for="clave_devolucion">Clave:</label>
+                    <input type="text" name="clave_devolucion" id="clave_devolucion" required
+                        onblur="fetchProductDetails('articulo_devolucion', 'marca_devolucion', 'categoria_devolucion', 'tamano_devolucion', 'existencias_devolucion', this.value)">
+                    <span id="existencias_devolucion"></span>
+                </div>
+                <div class="form-column">
+                    <label for="articulo_devolucion">Artículo:</label>
+                    <input type="text" name="articulo_devolucion" id="articulo_devolucion" readonly>
+                </div>
+            </div>
+            <div class="form-container">
+                <div class="form-column">
+                    <label for="cantidad_devolucion">Cantidad a Devolver:</label>
+                    <input type="number" name="cantidad_devolucion" required step="0.01">
+                </div>
+                <div class="form-column">
+                    <label for="motivo_devolucion">Motivo de Devolución:</label>
+                    <input type="text" name="motivo_devolucion">
+                </div>
+            </div>
+            <div class="button-group">
+                <button type="submit">Devolución</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="button-group">
+    </div>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Cliente</title>
+    <a href="/dashboard">Regresar al Menú Principal</a>
+    <link rel="stylesheet" href="/static/styles.css">
+    <script>
+        function confirmDelete() {
+            return confirm("¿Estás seguro de que deseas eliminar este cliente?");
+        }
+    </script>
+</head>
+<body>
+    {% include 'header.html' %}
+
+    <h2>Editar Cliente</h2>
+    {% if message %}
+        <p class="success-message">{{ message }}</p>
+    {% endif %}
+
+    <div class="main-container">
+        <form method="POST" action="/edit-client">
+            <input type="hidden" name="clave" value="{{ client.clave }}">
+
+            <div class="form-container">
+                <div class="form-column">
+                    <label for="nombre">Nombre:</label>
+                    <input type="text" name="nombre" value="{{ client.nombre }}" required>
+
+                    <label for="apellido">Apellido:</label>
+                    <input type="text" name="apellido" value="{{ client.apellido }}" required>
+
+                    <label for="direccion">Dirección:</label>
+                    <input type="text" name="direccion" value="{{ client.direccion }}" required>
+                </div>
+
+                <div class="form-column">
+                    <label for="telefono">Teléfono:</label>
+                    <input type="tel" name="telefono" value="{{ client.telefono }}" required>
+
+                    <label for="correo">Correo electrónico:</label>
+                    <input type="email" name="correo" value="{{ client.correo }}" required>
+
+                    <label for="credito_autorizado">Crédito autorizado:</label>
+                    <input type="number" name="credito_autorizado" value="{{ client.credito_autorizado }}" required>
+
+                    <label for="saldo_actual">Credito Disponible:</label>
+                    <input type="text" id="saldo_actual" name="saldo_actual" value="{{ saldo_actual|default('Cargando...') }}" readonly>
+                    {% if saldo_actual == 0 %}
+                        <p class="saldo-agotado-message">SALDO AGOTADO</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="submit">Guardar Cambios</button>
+            </div>
+        </form>
+
+        <div class="button-group">
+            <form method="POST" action="/delete-client" onsubmit="return confirmDelete()">
+                <input type="hidden" name="clave" value="{{ client.clave }}">
+                <button type="submit" class="delete-button">Eliminar Cliente</button>
+            </form>
+        </div>
+
+    </div>
+</body>
+</html>
