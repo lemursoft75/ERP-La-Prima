@@ -660,11 +660,13 @@ def search_client():
 
 
 # Calculo de saldos (FUNCIÓN ADAPTADA PARA FIREBASE)
+# Esta función es utilizada en el módulo de ventas y cobranza.
+# Aseguraremos que siempre calcule el saldo DISPONIBLE del crédito.
 def calcular_saldo_cliente(clave_cliente):
     # --- CAMBIO CLAVE: Obtener cliente de Firestore ---
     cliente = get_client_from_firestore(clave_cliente)
     credito_autorizado = 0.0
-    saldo_pendiente_total = 0.0
+    saldo_pendiente_total = 0.0 # Este es el total de la DEUDA activa
 
     if cliente:
         try:
@@ -673,18 +675,23 @@ def calcular_saldo_cliente(clave_cliente):
         except ValueError:
             credito_autorizado = 0.0
 
-        # --- CAMBIO CLAVE: Obtener ventas del cliente de Firestore ---
-        ventas_cliente = get_sales_by_client_from_firestore(clave_cliente)
+        # --- ¡ESTE ES EL CAMBIO CRÍTICO! ---
+        # Antes llamaba a get_sales_by_client_from_firestore (que trae TODAS las ventas).
+        # Ahora debe llamar a get_pending_sales_for_client_from_firestore (que trae SOLO las ventas con saldo > 0).
+        ventas_cliente = get_pending_sales_for_client_from_firestore(clave_cliente)
 
         for venta in ventas_cliente:
             try:
                 # Sumar solo el 'saldo_a_pagar' de cada venta
+                # Ya sabemos que estas ventas tienen saldo_a_pagar > 0 por la función de arriba.
                 saldo_pendiente_total += float(venta.get("saldo_a_pagar", 0.0))
             except ValueError:
                 pass
 
+    # El saldo actual disponible es el crédito autorizado menos la deuda pendiente total
     saldo_actual = credito_autorizado - saldo_pendiente_total
-    return saldo_actual
+    return saldo_actual # Retornar el saldo DISPONIBLE
+
 
 
 # Encontrar Clientes (usado por AJAX para buscar un cliente individualmente)
@@ -1360,37 +1367,38 @@ def billing():
     return redirect("/")
 
 
+
 # Devolver datos del cliente y sus deudas
 @app.route("/get-client-debts", methods=["GET"])
 def get_client_debts():
     clave_cliente = request.args.get("clave")
+    print(f"DEBUG_COBRANZA: Buscando deudas para cliente: {clave_cliente}")
 
-    # --- CAMBIO CLAVE: Obtener cliente de Firestore ---
     cliente = get_client_from_firestore(clave_cliente)
-
     if not cliente:
+        print(f"DEBUG_COBRANZA: Cliente {clave_cliente} no encontrado.")
         return {"found": False}
 
     ventas_pendientes_info = []
     saldo_pendiente_total = 0.0
 
-    # --- CAMBIO CLAVE: Obtener ventas pendientes del cliente de Firestore ---
     ventas_pendientes_firestore = get_pending_sales_for_client_from_firestore(clave_cliente)
+    print(f"DEBUG_COBRANZA: Ventas pendientes encontradas para {clave_cliente}: {len(ventas_pendientes_firestore)}")
 
     for venta in ventas_pendientes_firestore:
-        # Usamos 'id' si Firestore generó el ID, si tu 'folio' es un campo, úsalo
-        folio_venta = venta.get("folio",
-                                venta.get("id"))  # Preferir 'folio' si lo tienes como campo, sino el ID del documento
+        folio_venta = venta.get("folio", venta.get("id"))
         saldo_a_pagar = float(venta.get("saldo_a_pagar", 0.0))
+        print(f"DEBUG_COBRANZA: Venta: {folio_venta}, saldo_a_pagar: {saldo_a_pagar}")
 
-        if saldo_a_pagar > 0:  # Doble chequeo por si la consulta no es estricta
+        if saldo_a_pagar > 0:
             ventas_pendientes_info.append({
                 "folio": folio_venta,
                 "saldo_a_pagar": saldo_a_pagar
             })
             saldo_pendiente_total += saldo_a_pagar
 
-    return jsonify({  # Usar jsonify para asegurar que la respuesta sea JSON
+    print(f"DEBUG_COBRANZA: Saldo pendiente total calculado: {saldo_pendiente_total}")
+    return jsonify({
         "found": True,
         "nombre": cliente.get("nombre", ""),
         "apellido": cliente.get("apellido", ""),
