@@ -350,6 +350,7 @@ def delete_product_from_firestore(clave):
         print(f"Error al eliminar producto '{clave}' de Firestore: {e}")
         return False
 
+
 def get_inventory_item_from_firestore(clave):
     """
     Recupera un ítem de inventario de la colección 'inventory' por su clave.
@@ -366,6 +367,7 @@ def get_inventory_item_from_firestore(clave):
         print(f"Error al obtener ítem de inventario '{clave}' de Firestore: {e}")
         return None
 
+
 def update_inventory_item_in_firestore(clave, inventory_data):
     """
     Actualiza o crea un ítem de inventario en la colección 'inventory'.
@@ -377,6 +379,7 @@ def update_inventory_item_in_firestore(clave, inventory_data):
     except Exception as e:
         print(f"Error al actualizar inventario para '{clave}' en Firestore: {e}")
         return False
+
 
 def delete_inventory_item_from_firestore(clave):
     """
@@ -391,6 +394,7 @@ def delete_inventory_item_from_firestore(clave):
         return False
 
 # --- FIN FUNCIONES PARA FIRESTORE (Productos e Inventario) ---
+
 
 
 # PRODUCTOS
@@ -969,6 +973,24 @@ def get_sale_from_firestore(sale_id):
         print(f"Error al obtener venta '{sale_id}' de Firestore: {e}")
         return None
 
+
+def obtener_nuevo_folio():
+    ventas_ref = db.collection("sales")
+    query = ventas_ref.order_by("folio", direction=firestore.Query.DESCENDING).limit(1)
+    docs = query.stream()
+
+    for doc in docs:
+        ultimo_folio = doc.to_dict().get("folio", "F00000")
+        numero = int(ultimo_folio[1:]) + 1
+        return f"F{numero:05d}"
+
+    # Si no hay ninguna venta aún
+    return "F00001"
+
+
+
+
+
 def add_sale_to_firestore(sale_data, custom_id=None):
     """
     Agrega una nueva venta a la colección 'sales'.
@@ -997,6 +1019,8 @@ def decrement_inventory_in_firestore(clave_producto, cantidad_vendida):
     # Usamos una transacción para asegurar que la lectura y escritura de existencias sean atómicas
     transaction = db.transaction()
     inventory_ref = db.collection('inventory').document(clave_producto)
+
+
 
     @firestore.transactional
     def update_and_log_exit(transaction, inventory_ref, cantidad_vendida, clave_producto):
@@ -1082,6 +1106,7 @@ def sales():
             message = "❌ Venta no encontrada."
 
     return render_template("sales.html", clients=clients, products=products, message=message)
+
 
 
 # Procesar venta
@@ -1222,10 +1247,13 @@ def process_sale():
             "monto": initial_cantidad_pagada
         })
 
-    # --- Guardar la venta en Firestore y obtener su ID (folio) ---
-    # Usaremos el ID generado por Firestore como el 'folio' si no pasas un custom_id.
-    # Esto es más robusto que un contador simple si hay muchas operaciones concurrentes.
-    success_sale_add, sale_firestore_id = add_sale_to_firestore(nueva_venta_data)
+
+    # Generar folio corto y consecutivo
+    nuevo_folio = obtener_nuevo_folio()
+    nueva_venta_data["folio"] = nuevo_folio  # Guardar también dentro del documento
+
+    # Guardar la venta con folio como ID del documento
+    success_sale_add, sale_firestore_id = add_sale_to_firestore(nueva_venta_data, custom_id=nuevo_folio)
 
     if not success_sale_add:
         clients_for_template = [doc.to_dict() for doc in db.collection('clients').stream()]
@@ -1306,16 +1334,9 @@ def get_sale():
     return jsonify({"found": False})
 
 
-# Actualizar existencias (Esta función ya no es necesaria como separada, su lógica está en decrement_inventory_in_firestore)
-# def update_inventory(clave_producto, cantidad_vendida):
-#     # Esta lógica ahora está encapsulada en decrement_inventory_in_firestore y usa transacciones.
-#     pass
-
 
 # --- FUNCIONES ADICIONALES PARA INTERACTUAR CON FIRESTORE (Cobranza) ---
 
-# get_client_from_firestore(clave) - Ya definida en el módulo de clientes
-# get_sale_from_firestore(sale_id) - Ya definida en el módulo de ventas
 
 def get_pending_sales_for_client_from_firestore(clave_cliente):
     """
@@ -1474,6 +1495,7 @@ def process_payment():
         return jsonify({"success": False, "message": "❌ No se pudo procesar ningún pago. Verifica los datos."})
 
 
+
 # --- FUNCIONES DE AYUDA PARA OBTENER TODOS LOS DATOS DE UNA COLECCIÓN ---
 
 def get_all_documents_from_collection(collection_name):
@@ -1496,6 +1518,8 @@ def get_all_documents_from_collection(collection_name):
 
 # --- FIN FUNCIONES DE AYUDA ---
 
+
+
 # REPORTES
 
 # Ir Pagina de Reportes (No requiere cambios)
@@ -1504,6 +1528,7 @@ def reportes():
     if 'user' in session:
         return render_template('reportes.html')
     return redirect("/")
+
 
 
 # Exportar Ventas con Notas
@@ -1732,6 +1757,7 @@ def view_sales_graph():
                            report_title='Gráfica del Importe Total de Ventas por Día')
 
 
+
 # Carga de inventarios (para gráfico)
 def generate_inventory_graph():
     # --- CAMBIO CLAVE: Cargar inventario de Firestore ---
@@ -1773,6 +1799,7 @@ def generate_inventory_graph():
 def view_inventory_graph():
     plot_url = generate_inventory_graph()
     return render_template('graph_viewer.html', plot_url=plot_url, report_title='Gráfica de Niveles de Existencia')
+
 
 
 # Carga de Saldos (para gráfico)
